@@ -3,5 +3,5 @@ version: 0.2
 phases:
   build:
     commands:
-      - aws s3 sync . s3://my-static-site-demo-2025 --delete
+      - aws s3 sync ./build s3://my-static-site-demo-2025 --delete
       - aws cloudfront create-invalidation --distribution-id E1N0E94J3HK05D --paths "/*"
