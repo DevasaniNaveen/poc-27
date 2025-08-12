@@ -1,7 +1,22 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - echo Installing dependencies...
+      - npm install
   build:
     commands:
+      - echo Building the project...
+      - npm run build
+      - echo Deploying to S3...
       - aws s3 sync ./build s3://my-static-site-demo-2025 --delete
+      - echo Invalidating CloudFront cache...
       - aws cloudfront create-invalidation --distribution-id E1N0E94J3HK05D --paths "/*"
+
+artifacts:
+  files:
+    - '**/*'
+
