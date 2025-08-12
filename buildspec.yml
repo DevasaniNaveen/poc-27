@@ -1,22 +1,28 @@
 version: 0.2
 
+env:
+  variables:
+    BUCKET_NAME: "my-static-site-demo-2025"
+    DISTRIBUTION_ID: "E1N0E94J3HK05D"   # replace
+
 phases:
   install:
     runtime-versions:
       nodejs: 18
     commands:
-      - echo Installing dependencies...
-      - npm install
+      - echo "Install dependencies"
+      - npm ci
   build:
     commands:
-      - echo Building the project...
+      - echo "Build app"
       - npm run build
-      - echo Deploying to S3...
-      - aws s3 sync ./build s3://my-static-site-demo-2025 --delete
-      - echo Invalidating CloudFront cache...
-      - aws cloudfront create-invalidation --distribution-id E1N0E94J3HK05D --paths "/*"
-
+  post_build:
+    commands:
+      - echo "Sync to S3"
+      - aws s3 sync ./build s3://$BUCKET_NAME --delete --acl public-read
+      - echo "Create CloudFront invalidation"
+      - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
 artifacts:
   files:
     - '**/*'
-
+  base-directory: build
